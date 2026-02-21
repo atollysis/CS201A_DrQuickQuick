@@ -44,10 +44,10 @@ public class GameRenderer {
         Texture patientTexture = assets.patientTexture();
 
         for (Patient patient : patientArray) {
-            Vector2 coords = patient.getCoords();
+            Vector2 pos = patient.getPosition();
             Sprite patientSprite = new Sprite(patientTexture);
-            patientSprite.setX(coords.x - patientTexture.getWidth() / 2f); // Middle
-            patientSprite.setY(coords.y); // Bottom
+            patientSprite.setX(pos.x - patientTexture.getWidth() / 2f); // Middle
+            patientSprite.setY(pos.y); // Bottom
             spritePatients.add(patientSprite);
 //            System.out.format("New patient added at (%.2f, %.2f)!\n", coords.x, coords.y);
         }
@@ -69,8 +69,8 @@ public class GameRenderer {
      */
     public void centerCamera(Player player) {
         camera.position.set(
-            player.getPosX(),
-            player.getPosY(),
+            player.getPosition().x,
+            player.getPosition().y,
             0);
         camera.update();
     }
@@ -132,8 +132,8 @@ public class GameRenderer {
             spritePlayer.flip(true, false);
 
         Texture playerTexture = assets.playerTexture();
-        spritePlayer.setX(player.getPosX() - playerTexture.getWidth() / 2f); // Middle
-        spritePlayer.setY(player.getPosY()); // Bottom
+        spritePlayer.setX(player.getPosition().x - playerTexture.getWidth() / 2f); // Middle
+        spritePlayer.setY(player.getPosition().y); // Bottom
 
         spritePlayer.draw(batch);
     }

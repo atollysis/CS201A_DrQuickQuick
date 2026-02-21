@@ -20,7 +20,7 @@ public class MapLoader {
 
         List<List<TileType>> tiles = new ArrayList<>();
 
-        int mapWidth = -1, mapHeight = -1;
+        int mapWidth = -1, mapHeight;
 
         for (String row : mapRows) {
             List<TileType> converted = row.chars()

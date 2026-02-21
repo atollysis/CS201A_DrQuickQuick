@@ -1,18 +1,19 @@
 package com.github.atollysis.entities;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Patient {
+public class Patient extends Entity {
 
     /*
      * FIELDS
      */
+    private static final Rectangle BOUNDS = new Rectangle(0f, 0f, 32f, 16f);
+
     // True sort place
     private final int sortId;
     // Number to display to the player
     private final int sortUrgency;
-    // Physical map coords
-    private final Vector2 coords;
 
     // If minigame is finished
     private boolean isSorted = false;
@@ -22,10 +23,10 @@ public class Patient {
     /*
      * CONSTRUCTOR
      */
-    public Patient(int sortId, int sortNumber, Vector2 coords) {
+    public Patient(int sortId, int sortNumber, Vector2 position) {
         this.sortId = sortId;
         this.sortUrgency = sortNumber;
-        this.coords = coords;
+        this.position.set(position);
     }
 
     /*
@@ -46,16 +47,17 @@ public class Patient {
         return sortUrgency;
     }
 
-    public Vector2 getCoords() {
-        return coords;
-    }
-
     public boolean isSorted() {
         return isSorted;
     }
 
     public int getSortedPlace() {
         return sortedPlace;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return BOUNDS;
     }
 
     /*

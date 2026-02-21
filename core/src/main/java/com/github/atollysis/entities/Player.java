@@ -2,18 +2,19 @@ package com.github.atollysis.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Player {
+public class Player extends Entity {
 
     /*
      * FIELDS
      */
+    private static final Rectangle BOUNDS = new Rectangle(0f, 0f, 32f, 16f);
     private static final float ACCEL = 1400;
     private static final float MAX_SPEED = 400f;
     private static final float FRICTION = 1000f;
 
-    private final Vector2 playerPosition = new Vector2(0, 0);
     private final Vector2 playerVelocity = new Vector2(0, 0);
     private FacingDirection facingDirection = FacingDirection.RIGHT;
 
@@ -57,22 +58,19 @@ public class Player {
         if (playerVelocity.len() > MAX_SPEED)
             playerVelocity.nor().scl(MAX_SPEED);
 
-        playerPosition.mulAdd(playerVelocity, delta);
+        this.position.mulAdd(playerVelocity, delta);
     }
 
     /*
      * GETTERS
      */
-    public float getPosX() {
-        return playerPosition.x;
-    }
-
-    public float getPosY() {
-        return playerPosition.y;
-    }
-
     public FacingDirection getFacingDirection() {
         return facingDirection;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return BOUNDS;
     }
 
 }

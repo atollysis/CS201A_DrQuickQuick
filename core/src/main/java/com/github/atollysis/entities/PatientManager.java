@@ -14,7 +14,7 @@ public class PatientManager {
      * FIELDS
      */
     private static final int PATIENT_COUNT = 10;
-    private static final int MAX_SORT_NUM_DISPLACMENT = 100 / PATIENT_COUNT;
+    private static final int MAX_SORT_NUM_DISPLACEMENT = 100 / PATIENT_COUNT;
 
     private final Array<Patient> patientArray = new Array<>(PATIENT_COUNT);
 
@@ -26,7 +26,7 @@ public class PatientManager {
 
         // Randomly generate and populate patient array
         for (int i = 0; i < PATIENT_COUNT; i++) {
-            sortDisplay += MathUtils.random(1, MAX_SORT_NUM_DISPLACMENT);
+            sortDisplay += MathUtils.random(1, MAX_SORT_NUM_DISPLACEMENT);
             Vector2 newCoords = getRandomCoords(tileMap, assets.patientTexture(), tileSize);
             patientArray.add(new Patient(i, sortDisplay, newCoords));
         }
