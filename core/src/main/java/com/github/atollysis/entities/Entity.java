@@ -21,8 +21,13 @@ public abstract class Entity {
         return this.position;
     }
 
-    // Implemented by child classes
+    /*
+     * ABSTRACT METHODS
+     */
     public abstract Rectangle getBounds();
+    // For rendering sprites
+    public abstract float getVisualX();
+    public abstract float getVisualY();
 
     /*
      * SETTERS

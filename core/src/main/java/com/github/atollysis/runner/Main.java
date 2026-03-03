@@ -3,9 +3,9 @@ package com.github.atollysis.runner;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.github.atollysis.Assets;
-import com.github.atollysis.GameInterface;
-import com.github.atollysis.GameRenderer;
+import com.github.atollysis.systems.Assets;
+import com.github.atollysis.systems.GameInterface;
+import com.github.atollysis.systems.GameRenderer;
 import com.github.atollysis.entities.PatientManager;
 import com.github.atollysis.entities.Player;
 import com.github.atollysis.maps.TileMap;
@@ -53,7 +53,7 @@ public class Main extends ApplicationAdapter {
 
         // FRONT
         ScreenUtils.clear(0, 0, 0, 1);
-        gameRenderer.render(player, currTileMap, assets);
+        gameRenderer.render(player, patientManager, currTileMap, assets);
         interfaceRenderer.render(time);
     }
 

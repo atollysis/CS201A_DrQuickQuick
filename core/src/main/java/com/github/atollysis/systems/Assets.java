@@ -1,4 +1,4 @@
-package com.github.atollysis;
+package com.github.atollysis.systems;
 
 import com.badlogic.gdx.graphics.Texture;
 

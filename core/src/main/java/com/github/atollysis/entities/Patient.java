@@ -60,6 +60,16 @@ public class Patient extends Entity {
         return BOUNDS;
     }
 
+    @Override
+    public float getVisualX() {
+        return this.position.x - BOUNDS.width / 2f;
+    }
+
+    @Override
+    public float getVisualY() {
+        return this.position.y;
+    }
+
     /*
      * SETTERS
      */

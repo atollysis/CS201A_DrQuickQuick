@@ -1,4 +1,4 @@
-package com.github.atollysis;
+package com.github.atollysis.systems;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,6 +30,9 @@ public class GameRenderer {
     private final SpriteBatch batch = new SpriteBatch();
     private final Sprite spritePlayer;
     private final Array<Sprite> spritePatients;
+    // Other renderers
+    private final DebugRenderer debugRenderer = new DebugRenderer();
+    private boolean isDebugRendererActive = true;
 
     /*
      * CONSTRUCTOR
@@ -62,6 +65,7 @@ public class GameRenderer {
 
     public void dispose() {
         batch.dispose();
+        debugRenderer.dispose();
     }
 
     /*
@@ -75,7 +79,11 @@ public class GameRenderer {
         camera.update();
     }
 
-    public void render(Player player, TileMap tileMap, Assets assets) {
+    public void render(
+                Player player,
+                PatientManager patientManager,
+                TileMap tileMap,
+                Assets assets) {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
@@ -84,6 +92,12 @@ public class GameRenderer {
         drawPlayer(player, assets);
 
         batch.end();
+
+        if (isDebugRendererActive)
+            debugRenderer.renderBounds(
+                camera,
+                player,
+                patientManager.getPatientArray());
     }
 
     private Vector2 getViewableBottomLeft() {
