@@ -23,10 +23,9 @@ public class Patient extends Entity {
     /*
      * CONSTRUCTOR
      */
-    public Patient(int sortId, int sortNumber, Vector2 position) {
+    public Patient(int sortId, int sortNumber) {
         this.sortId = sortId;
         this.sortUrgency = sortNumber;
-        this.position.set(position);
     }
 
     /*
@@ -76,6 +75,10 @@ public class Patient extends Entity {
     public void setSorted(boolean isSorted, int sortedPlace) {
         this.isSorted = isSorted;
         this.sortedPlace = sortedPlace;
+    }
+
+    public void setCoords(Vector2 coords) {
+        this.position.set(coords);
     }
 
 }

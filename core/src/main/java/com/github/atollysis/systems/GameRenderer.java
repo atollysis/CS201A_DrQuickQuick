@@ -20,9 +20,9 @@ public class GameRenderer {
     /*
      * FIELDS
      */
-    private static final float TILE_SIZE = 32;
-    private static final float WORLD_WIDTH = 640f;
-    private static final float WORLD_HEIGHT = 360f;
+    private static final float TILE_SIZE = GameConfig.getTileSize();
+    private static final float WORLD_WIDTH = GameConfig.getWorldWidth();
+    private static final float WORLD_HEIGHT = GameConfig.getWorldHeight();
     // Camera
     private final OrthographicCamera camera = new OrthographicCamera();
     private final Viewport viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);

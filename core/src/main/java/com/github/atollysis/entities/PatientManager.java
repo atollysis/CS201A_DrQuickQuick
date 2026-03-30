@@ -27,30 +27,10 @@ public class PatientManager {
         // Randomly generate and populate patient array
         for (int i = 0; i < PATIENT_COUNT; i++) {
             sortDisplay += MathUtils.random(1, MAX_SORT_NUM_DISPLACEMENT);
-            Vector2 newCoords = getRandomCoords(tileMap, assets.patientTexture(), tileSize);
-            patientArray.add(new Patient(i, sortDisplay, newCoords));
+            Patient patient = new Patient(i, sortDisplay);
+            patient.setCoords(tileMap.getRandomCoords(patient));
+            patientArray.add(patient);
         }
-    }
-
-    private Vector2 getRandomCoords(TileMap tileMap, Texture patientTexture, float tileSize) {
-        int randTileX, randTileY;
-
-        do {
-            randTileX = MathUtils.random(0, tileMap.getWidth() - 1);
-            randTileY = MathUtils.random(0, tileMap.getHeight() - 1);
-        } while (tileMap.getTileAt(randTileX, randTileY) != TileType.FLOOR);
-
-        float randOffsetX = MathUtils.random(
-            patientTexture.getWidth() / 2f,
-            tileSize - patientTexture.getWidth() / 2f
-        );
-
-        float randOffsetY = MathUtils.random(0, tileSize);
-
-        return new Vector2(
-            (randTileX * tileSize) + randOffsetX,
-            (randTileY * tileSize) + randOffsetY
-        );
     }
 
     /*

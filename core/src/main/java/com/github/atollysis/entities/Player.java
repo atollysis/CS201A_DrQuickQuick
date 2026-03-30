@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.github.atollysis.maps.TileMap;
+import com.github.atollysis.systems.CollisionSystem;
 
 public class Player extends Entity {
 
@@ -19,13 +21,16 @@ public class Player extends Entity {
     private FacingDirection facingDirection = FacingDirection.RIGHT;
 
     /*
-     * DEFAULT CONSTRUCTOR USED
+     * CONSTRUCTOR
      */
+    public Player(TileMap tileMap) {
+        this.position.set(tileMap.getRandomCoords(this));
+    }
 
     /*
      * METHODS
      */
-    public void handleInputUpdatePos(float delta) {
+    public void handleInputUpdatePos(float delta, CollisionSystem collisionSystem) {
         Vector2 acceleration = new Vector2();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W))
@@ -58,7 +63,12 @@ public class Player extends Entity {
         if (playerVelocity.len() > MAX_SPEED)
             playerVelocity.nor().scl(MAX_SPEED);
 
-        this.position.mulAdd(playerVelocity, delta);
+        Vector2 newPos = new Vector2(this.position).mulAdd(playerVelocity, delta);
+
+        this.position.set(newPos.x, this.position.y);
+        collisionSystem.resolveX(this);
+        this.position.set(this.position.x, newPos.y);
+        collisionSystem.resolveY(this);
     }
 
     /*
@@ -82,4 +92,16 @@ public class Player extends Entity {
     public float getVisualY() {
         return this.position.y;
     }
+
+    /*
+     * SETTERS
+     */
+    public void resetVelocityX() {
+        this.playerVelocity.x = 0;
+    }
+
+    public void resetVelocityY() {
+        this.playerVelocity.y = 0;
+    }
+
 }

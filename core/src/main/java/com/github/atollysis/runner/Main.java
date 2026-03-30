@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.github.atollysis.systems.Assets;
+import com.github.atollysis.systems.CollisionSystem;
 import com.github.atollysis.systems.GameInterface;
 import com.github.atollysis.systems.GameRenderer;
 import com.github.atollysis.entities.PatientManager;
@@ -26,6 +27,8 @@ public class Main extends ApplicationAdapter {
     private float time = 0f;
     private GameInterface interfaceRenderer;
 
+    private CollisionSystem collisionSystem;
+
     /*
      * METHODS
      */
@@ -34,8 +37,10 @@ public class Main extends ApplicationAdapter {
         assets = new Assets();
 
         currTileMap = MapLoader.loadMap();
-        player = new Player();
+        player = new Player(currTileMap);
         patientManager = new PatientManager(currTileMap, assets, GameRenderer.getTileSize());
+
+        collisionSystem = new CollisionSystem(currTileMap);
 
         gameRenderer = new GameRenderer(assets, patientManager);
         gameRenderer.centerCamera(player);
@@ -48,7 +53,8 @@ public class Main extends ApplicationAdapter {
         // BACK
         float delta = Gdx.graphics.getDeltaTime();
         time += delta;
-        player.handleInputUpdatePos(delta);
+        player.handleInputUpdatePos(delta, collisionSystem);
+//        collisionSystem.checkMapCollision(player);
         gameRenderer.centerCamera(player);
 
         // FRONT
