@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.github.atollysis.systems.Assets;
 import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.maps.TileType;
+import com.github.atollysis.systems.GameConfig;
 
 public class PatientManager {
 
@@ -18,7 +19,7 @@ public class PatientManager {
      * FIELDS
      */
     private static final int PATIENT_COUNT = 10;
-    private static final int MAX_SORT_NUM_DISPLACEMENT = 100 / PATIENT_COUNT;
+    private static final int MAX_SORT_NUM_DISPLACEMENT = (int) (GameConfig.getMaxPatientLevel() / PATIENT_COUNT);
 
     private final Array<Patient> patientArray = new Array<>(PATIENT_COUNT);
     private Patient hoveredPatient = null;

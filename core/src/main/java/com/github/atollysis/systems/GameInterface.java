@@ -20,6 +20,8 @@ public class GameInterface {
      * FIELDS
      */
     private final float BOX_PADDING = 30f;
+    private final String FORMAT_STRING = "%0" + GameConfig.getMaxDigitLength() + "d";
+
     private final BitmapFont FONT = new BitmapFont(Gdx.files.internal("fonts/montserrat_128.fnt"));
     private final Label.LabelStyle STYLE_TIMER = new Label.LabelStyle(FONT, Color.WHITE);
     private final Label.LabelStyle STYLE_LBL = new Label.LabelStyle(FONT, Color.BLACK);
@@ -91,7 +93,7 @@ public class GameInterface {
         }
         lbl_hoveredUrgency.setVisible(true);
 
-        String txt = String.format("%02d", p.getSortUrgency());
+        String txt = String.format(FORMAT_STRING, p.getSortUrgency());
         lbl_hoveredUrgency.setText(txt);
         txtLayout.setText(FONT, txt);
 
