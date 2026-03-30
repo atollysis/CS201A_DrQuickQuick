@@ -1,16 +1,11 @@
 package com.github.atollysis.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.github.atollysis.systems.Assets;
 import com.github.atollysis.maps.TileMap;
-import com.github.atollysis.maps.TileType;
 import com.github.atollysis.systems.GameConfig;
 
 public class PatientManager {
@@ -27,7 +22,7 @@ public class PatientManager {
     /*
      * CONSTRUCTOR
      */
-    public PatientManager(TileMap tileMap, Assets assets, float tileSize) {
+    public PatientManager(TileMap tileMap, Assets assets) {
         int sortDisplay = 0;
 
         // Randomly generate and populate patient array

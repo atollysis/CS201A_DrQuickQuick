@@ -38,7 +38,7 @@ public class Main extends ApplicationAdapter {
 
         currTileMap = MapLoader.loadMap();
         player = new Player(currTileMap);
-        patientManager = new PatientManager(currTileMap, assets, GameRenderer.getTileSize());
+        patientManager = new PatientManager(currTileMap, assets);
 
         collisionSystem = new CollisionSystem(currTileMap);
 
