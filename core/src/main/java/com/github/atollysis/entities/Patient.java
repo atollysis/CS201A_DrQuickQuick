@@ -1,7 +1,11 @@
 package com.github.atollysis.entities;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.github.atollysis.systems.Assets;
+
+import java.util.Objects;
 
 public class Patient extends Entity {
 
@@ -20,10 +24,14 @@ public class Patient extends Entity {
     // Which place the player sorted it
     private int sortedPlace = -1;
 
+    // Front end
+    private final Sprite sprite;
+
     /*
      * CONSTRUCTOR
      */
-    public Patient(int sortId, int sortNumber) {
+    public Patient(Assets assets, int sortId, int sortNumber) {
+        sprite = new Sprite(assets.patientTexture());
         this.sortId = sortId;
         this.sortUrgency = sortNumber;
     }
@@ -33,6 +41,15 @@ public class Patient extends Entity {
      */
     public boolean isProperlySorted() {
         return sortId == sortedPlace;
+    }
+
+    public boolean boundsContains(float x, float y) {
+        this.sprite.setPosition(
+            this.position.x - BOUNDS.width / 2f,
+            this.position.y
+        );
+        return sprite.getBoundingRectangle().contains(x, y);
+
     }
 
     /*
@@ -52,6 +69,10 @@ public class Patient extends Entity {
 
     public int getSortedPlace() {
         return sortedPlace;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
     }
 
     @Override
@@ -79,6 +100,26 @@ public class Patient extends Entity {
 
     public void setCoords(Vector2 coords) {
         this.position.set(coords);
+        this.sprite.setPosition(
+            coords.x - BOUNDS.width / 2f,
+            coords.y
+        );
+    }
+
+    /*
+     * OVERRIDDEN METHODS
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Patient patient = (Patient) o;
+        return sortId == patient.sortId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(sortId);
     }
 
 }

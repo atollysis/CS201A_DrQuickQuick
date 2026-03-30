@@ -45,7 +45,7 @@ public class Main extends ApplicationAdapter {
         gameRenderer = new GameRenderer(assets, patientManager);
         gameRenderer.centerCamera(player);
 
-        interfaceRenderer = new GameInterface();
+        interfaceRenderer = new GameInterface(assets);
     }
 
     @Override
@@ -54,13 +54,13 @@ public class Main extends ApplicationAdapter {
         float delta = Gdx.graphics.getDeltaTime();
         time += delta;
         player.handleInputUpdatePos(delta, collisionSystem);
-//        collisionSystem.checkMapCollision(player);
+        patientManager.updateHoveredPatient(gameRenderer.getMouseToWorldCoords());
         gameRenderer.centerCamera(player);
 
         // FRONT
         ScreenUtils.clear(0, 0, 0, 1);
         gameRenderer.render(player, patientManager, currTileMap, assets);
-        interfaceRenderer.render(time);
+        interfaceRenderer.render(time, patientManager, gameRenderer);
     }
 
     @Override

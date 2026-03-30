@@ -1,11 +1,13 @@
 package com.github.atollysis.systems;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.atollysis.entities.FacingDirection;
@@ -29,7 +31,7 @@ public class GameRenderer {
     // Sprites
     private final SpriteBatch batch = new SpriteBatch();
     private final Sprite spritePlayer;
-    private final Array<Sprite> spritePatients;
+//    private final Array<Sprite> spritePatients;
     // Other renderers
     private final DebugRenderer debugRenderer = new DebugRenderer();
     private boolean isDebugRendererActive = true;
@@ -42,18 +44,18 @@ public class GameRenderer {
 
         spritePlayer = new Sprite(assets.playerTexture());
 
-        Array<Patient> patientArray = patientManager.getPatientArray();
-        spritePatients = new Array<>(patientArray.size);
-        Texture patientTexture = assets.patientTexture();
+//        Array<Patient> patientArray = patientManager.getPatientArray();
+//        spritePatients = new Array<>(patientArray.size);
+//        Texture patientTexture = assets.patientTexture();
 
-        for (Patient patient : patientArray) {
-            Vector2 pos = patient.getPosition();
-            Sprite patientSprite = new Sprite(patientTexture);
-            patientSprite.setX(pos.x - patientTexture.getWidth() / 2f); // Middle
-            patientSprite.setY(pos.y); // Bottom
-            spritePatients.add(patientSprite);
-//            System.out.format("New patient added at (%.2f, %.2f)!\n", coords.x, coords.y);
-        }
+//        for (Patient patient : patientArray) {
+//            Vector2 pos = patient.getPosition();
+//            Sprite patientSprite = new Sprite(patientTexture);
+//            patientSprite.setX(pos.x - patientTexture.getWidth() / 2f); // Middle
+//            patientSprite.setY(pos.y); // Bottom
+//            spritePatients.add(patientSprite);
+////            System.out.format("New patient added at (%.2f, %.2f)!\n", coords.x, coords.y);
+//        }
     }
 
     /*
@@ -88,7 +90,7 @@ public class GameRenderer {
         batch.begin();
 
         drawBackground(tileMap, assets);
-        drawPatients();
+        drawPatients(patientManager);
         drawPlayer(player, assets);
 
         batch.end();
@@ -152,12 +154,14 @@ public class GameRenderer {
         spritePlayer.draw(batch);
     }
 
-    private void drawPatients() {
-        for (Sprite patient : spritePatients) {
+    private void drawPatients(PatientManager patientManager) {
+        for (Patient p : patientManager.getPatientArray()) {
             // TODO: Frustum culling
-//            BoundingBox spriteBounds = patient.getBoundingRectangle();
-//            if (camera.frustum.boundsInFrustum(patient.getBoundingRectangle()))
-                patient.draw(batch);
+            if (patientManager.getHoveredPatient() == p)
+                batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
+            p.getSprite().draw(batch);
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         }
     }
 
@@ -166,6 +170,28 @@ public class GameRenderer {
      */
     public static float getTileSize() {
         return TILE_SIZE;
+    }
+
+    public Vector3 getMouseToWorldCoords() {
+        Vector3 mouse = new Vector3(
+            Gdx.input.getX(),
+            Gdx.input.getY(),
+            0
+        );
+
+        camera.unproject(mouse);
+        return mouse;
+    }
+
+    public Vector3 getWorldToMouseCoords(float coordX, float coordY) {
+        Vector3 world = new Vector3(
+            coordX,
+            coordY,
+            0
+        );
+
+        camera.project(world);
+        return world;
     }
 
 }

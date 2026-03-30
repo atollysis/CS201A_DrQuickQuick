@@ -1,5 +1,7 @@
 package com.github.atollysis.systems;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Assets {
@@ -13,9 +15,19 @@ public class Assets {
     private final Texture textureFloor = new Texture("debug_floor.png");
     private final Texture textureWall = new Texture("debug_wall.png");
 
+    private final Texture whitePixel;
+
     /*
-     * DEFAULT CONSTRUCTOR USED
+     * CONSTRUCTOR
      */
+    public Assets() {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+
+        this.whitePixel = new Texture(pixmap);
+        pixmap.dispose();
+    }
 
     /*
      * METHODS
@@ -43,6 +55,10 @@ public class Assets {
 
     public Texture wallTexture() {
         return textureWall;
+    }
+
+    public Texture whitePixel() {
+        return whitePixel;
     }
 
 }
