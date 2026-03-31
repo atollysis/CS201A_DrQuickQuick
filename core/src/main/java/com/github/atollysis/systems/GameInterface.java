@@ -75,10 +75,10 @@ public class GameInterface {
     /*
      * METHODS
      */
-    public void render(float time, PatientManager patientManager, GameRenderer gameRenderer) {
-        lbl_timer.setText(String.format("%.2f", time));
+    public void render(GameSession gameSession, GameRenderer gameRenderer) {
+        lbl_timer.setText(String.format("%.2f", gameSession.getTime()));
 
-        this.drawHoverPatientLevel(patientManager, gameRenderer);
+        this.drawHoverPatientLevel(gameSession.getPatientManager(), gameRenderer);
 
         stage.act();
         stage.draw();

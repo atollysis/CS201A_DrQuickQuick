@@ -82,24 +82,25 @@ public class GameRenderer {
     }
 
     public void render(
-                Player player,
-                PatientManager patientManager,
-                TileMap tileMap,
+                GameSession gameSession,
                 Assets assets) {
+        Player p = gameSession.getPlayer();
+        PatientManager pMgr = gameSession.getPatientManager();
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        drawBackground(tileMap, assets);
-        drawPatients(patientManager);
-        drawPlayer(player, assets);
+        drawBackground(gameSession.getTileMap(), assets);
+        drawPatients(pMgr);
+        drawPlayer(p, assets);
 
         batch.end();
 
         if (isDebugRendererActive)
             debugRenderer.renderBounds(
                 camera,
-                player,
-                patientManager.getPatientArray());
+                p,
+                pMgr.getPatientArray());
     }
 
     private Vector2 getViewableBottomLeft() {
