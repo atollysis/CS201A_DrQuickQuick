@@ -13,10 +13,15 @@ public class PatientManager {
     /*
      * FIELDS
      */
-    private static final int PATIENT_COUNT = 10;
+    private static final Color CLR_SORTED = new Color(0.25f, 0.25f, 0.25f, 1f);
+    private static final Color CLR_HIGHLIGHTED = new Color(0.5f, 1f, 0.2f, 1f);
+
+    private static final int PATIENT_COUNT = 5;
     private static final int MAX_SORT_NUM_DISPLACEMENT = (int) (GameConfig.getMaxPatientLevel() / PATIENT_COUNT);
 
     private final Array<Patient> patientArray = new Array<>(PATIENT_COUNT);
+    private final Array<Patient> playerSortedPatientArray = new Array<>(PATIENT_COUNT);
+
     private Patient hoveredPatient = null;
 
     /*
@@ -28,7 +33,8 @@ public class PatientManager {
         // Randomly generate and populate patient array
         for (int i = 0; i < PATIENT_COUNT; i++) {
             sortDisplay += MathUtils.random(1, MAX_SORT_NUM_DISPLACEMENT);
-            Patient patient = new Patient(assets, i, sortDisplay);
+            int sortIndex = PATIENT_COUNT - i - 1;
+            Patient patient = new Patient(assets, sortIndex, sortDisplay);
             patient.setCoords(tileMap.getRandomCoords(patient));
             patientArray.add(patient);
         }
@@ -39,6 +45,9 @@ public class PatientManager {
      */
     public void updateHoveredPatient(Vector3 mouseCoords) {
         for (Patient p : this.patientArray) {
+            if (p.isSorted())
+                continue;
+
             if (p.boundsContains(mouseCoords.x, mouseCoords.y)) {
                 // Prev
                 this.deselectHoveredPatient();
@@ -61,6 +70,37 @@ public class PatientManager {
             );
         }
         this.hoveredPatient = null;
+    }
+
+    public void sortPatient() {
+        if (hoveredPatient == null)
+            return;
+
+        hoveredPatient.setSorted(
+            true,
+            playerSortedPatientArray.size
+        );
+        hoveredPatient.getSprite().setColor(CLR_SORTED);
+
+        playerSortedPatientArray.add(hoveredPatient);
+
+        hoveredPatient = null;
+
+        if (playerSortedPatientArray.size == PATIENT_COUNT)
+            debug_showResults();
+    }
+
+    private void debug_showResults() {
+        System.out.println("INDEX | URGENCY | PLACE | SORTED?");
+        for (int i = 0; i < PATIENT_COUNT; i++) {
+            Patient p = patientArray.get(i);
+            System.out.format(
+                "%5d | %7d | %5d | %7b\n",
+                p.getSortId(),
+                p.getSortUrgency(),
+                p.getSortedPlace(),
+                p.isProperlySorted());
+        }
     }
 
     /*

@@ -3,10 +3,7 @@ package com.github.atollysis.runner;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.github.atollysis.systems.Assets;
-import com.github.atollysis.systems.CollisionSystem;
-import com.github.atollysis.systems.GameInterface;
-import com.github.atollysis.systems.GameRenderer;
+import com.github.atollysis.systems.*;
 import com.github.atollysis.entities.PatientManager;
 import com.github.atollysis.entities.Player;
 import com.github.atollysis.maps.TileMap;
@@ -29,6 +26,8 @@ public class Main extends ApplicationAdapter {
 
     private CollisionSystem collisionSystem;
 
+    private Inputs inputs;
+
     /*
      * METHODS
      */
@@ -46,6 +45,11 @@ public class Main extends ApplicationAdapter {
         gameRenderer.centerCamera(player);
 
         interfaceRenderer = new GameInterface(assets);
+
+        inputs = new Inputs(patientManager);
+        Gdx.input.setInputProcessor(inputs);
+
+
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.github.atollysis.systems.Assets;
 
 import java.util.Objects;
 
-public class Patient extends Entity {
+public class Patient extends Entity implements Comparable<Patient> {
 
     /*
      * FIELDS
@@ -122,4 +122,8 @@ public class Patient extends Entity {
         return Objects.hashCode(sortId);
     }
 
+    @Override
+    public int compareTo(Patient o) {
+        return Integer.compare(this.sortUrgency, o.sortUrgency);
+    }
 }
