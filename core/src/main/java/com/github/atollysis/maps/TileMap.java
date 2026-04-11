@@ -1,5 +1,6 @@
 package com.github.atollysis.maps;
 
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.github.atollysis.entities.Entity;
@@ -52,11 +53,15 @@ public class TileMap {
     /*
      * GETTERS
      */
+    public TileType getTileAt(GridPoint2 point) {
+        return getTileAt(point.x, point.y);
+    }
+
     public TileType getTileAt(int x, int y) {
         try {
             return this.tiles[y][x];
         } catch (ArrayIndexOutOfBoundsException e) {
-            return TileType.EMPTY;
+            return null;
         }
     }
 
@@ -66,6 +71,17 @@ public class TileMap {
 
     public int getHeight() {
         return height;
+    }
+
+    /*
+     * SETTERS
+     */
+    public void setTileAt(int x, int y, TileType type) {
+        this.tiles[y][x] = type;
+    }
+
+    public void setTileAt(GridPoint2 point, TileType type) {
+        setTileAt(point.x, point.y, type);
     }
 
 }

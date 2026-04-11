@@ -1,12 +1,12 @@
 package com.github.atollysis.systems.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.github.atollysis.systems.Assets;
-import com.github.atollysis.systems.GameInterface;
-import com.github.atollysis.systems.GameRenderer;
-import com.github.atollysis.systems.GameSession;
+import com.github.atollysis.runner.Main;
+import com.github.atollysis.systems.*;
+import com.github.atollysis.systems.renderers.GameInterface;
+import com.github.atollysis.systems.renderers.GameRenderer;
 
 public class GameScreen implements Screen {
 
@@ -14,6 +14,7 @@ public class GameScreen implements Screen {
      * FIELDS
      */
     private final Assets assets;
+    private final SoundSystem soundSystem;
     private final GameSession gameSession;
     private final GameRenderer gameRenderer;
     private final GameInterface interfaceRenderer;
@@ -21,10 +22,11 @@ public class GameScreen implements Screen {
     /*
      * CONSTRUCTOR
      */
-    public GameScreen(Assets assets) {
+    public GameScreen(Assets assets, SoundSystem soundSystem, Main main) {
         this.assets = assets;
-        gameSession = new GameSession(assets);
-        gameRenderer = new GameRenderer(assets, gameSession.getPatientManager());
+        this.soundSystem = soundSystem;
+        gameSession = new GameSession(this, assets, soundSystem, main);
+        gameRenderer = new GameRenderer(assets);
         gameRenderer.centerCamera(gameSession.getPlayer());
         interfaceRenderer = new GameInterface(assets);
     }
@@ -32,6 +34,14 @@ public class GameScreen implements Screen {
     /*
      * METHODS
      */
+    public GameResult getResults() {
+        return gameSession.createResults();
+    }
+
+    public void debug_handleScroll(float x, float y) {
+        gameRenderer.debug_handleScroll(x, y);
+    }
+
     @Override
     public void show() {
         // TODO
@@ -44,9 +54,10 @@ public class GameScreen implements Screen {
         gameRenderer.centerCamera(gameSession.getPlayer());
 
         // FRONT
-        ScreenUtils.clear(0, 0, 0, 1);
+        ScreenUtils.clear(Color.BLACK);
         gameRenderer.render(gameSession, assets);
         interfaceRenderer.render(gameSession, gameRenderer);
+        soundSystem.update(delta);
     }
 
     @Override

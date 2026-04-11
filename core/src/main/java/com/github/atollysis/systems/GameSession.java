@@ -2,10 +2,12 @@ package com.github.atollysis.systems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
-import com.github.atollysis.entities.PatientManager;
+import com.github.atollysis.entities.EntityManager;
 import com.github.atollysis.entities.Player;
-import com.github.atollysis.maps.MapLoader;
+import com.github.atollysis.maps.MapGenerator;
 import com.github.atollysis.maps.TileMap;
+import com.github.atollysis.runner.Main;
+import com.github.atollysis.systems.screens.GameScreen;
 
 public class GameSession {
 
@@ -14,8 +16,9 @@ public class GameSession {
      */
     private final TileMap tileMap;
     private final Player player;
-    private final PatientManager patientManager;
+    private final EntityManager entityManager;
 
+    private final GameDifficulty difficulty = GameDifficulty.random();
     private float time = 0f;
 
     private final CollisionSystem collisionSystem;
@@ -25,14 +28,15 @@ public class GameSession {
     /*
      * CONSTRUCTOR
      */
-    public GameSession(Assets assets) {
-        tileMap = MapLoader.loadMap();
+    public GameSession(GameScreen screen, Assets assets, SoundSystem soundSystem, Main main) {
+//        tileMap = MapLoader.loadMap();
+        tileMap = MapGenerator.generateMap();
         player = new Player(tileMap);
-        patientManager = new PatientManager(tileMap, assets);
+        entityManager = new EntityManager(difficulty, tileMap, assets);
 
         collisionSystem = new CollisionSystem(tileMap);
 
-        inputs = new Inputs(patientManager);
+        inputs = new Inputs(screen, entityManager, soundSystem, main);
         Gdx.input.setInputProcessor(inputs);
     }
 
@@ -42,7 +46,11 @@ public class GameSession {
     public void updateState(float delta, Vector3 mouseWorldCoords) {
         time += delta;
         player.handleInputUpdatePos(delta, collisionSystem);
-        patientManager.updateHoveredPatient(mouseWorldCoords);
+        entityManager.updateHoveredPatient(mouseWorldCoords);
+    }
+
+    public GameResult createResults() {
+        return new GameResult(this);
     }
 
     /*
@@ -56,8 +64,8 @@ public class GameSession {
         return player;
     }
 
-    public PatientManager getPatientManager() {
-        return patientManager;
+    public EntityManager getPatientManager() {
+        return entityManager;
     }
 
     public float getTime() {

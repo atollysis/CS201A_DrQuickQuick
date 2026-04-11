@@ -31,7 +31,7 @@ public class Patient extends Entity implements Comparable<Patient> {
      * CONSTRUCTOR
      */
     public Patient(Assets assets, int sortId, int sortNumber) {
-        sprite = new Sprite(assets.patientTexture());
+        sprite = new Sprite(assets.randomPatientTexture());
         this.sortId = sortId;
         this.sortUrgency = sortNumber;
     }
@@ -39,6 +39,7 @@ public class Patient extends Entity implements Comparable<Patient> {
     /*
      * METHODS
      */
+
     public boolean isProperlySorted() {
         return sortId == sortedPlace;
     }
@@ -55,6 +56,7 @@ public class Patient extends Entity implements Comparable<Patient> {
     /*
      * GETTERS
      */
+
     public int getSortId() {
         return sortId;
     }
@@ -71,13 +73,14 @@ public class Patient extends Entity implements Comparable<Patient> {
         return sortedPlace;
     }
 
-    public Sprite getSprite() {
-        return sprite;
-    }
-
     @Override
     public Rectangle getBounds() {
         return BOUNDS;
+    }
+
+    @Override
+    public Sprite getSprite() {
+        return sprite;
     }
 
     @Override

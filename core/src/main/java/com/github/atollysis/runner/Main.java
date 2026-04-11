@@ -1,16 +1,12 @@
 package com.github.atollysis.runner;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.github.atollysis.systems.*;
-import com.github.atollysis.entities.PatientManager;
-import com.github.atollysis.entities.Player;
-import com.github.atollysis.maps.TileMap;
-import com.github.atollysis.maps.MapLoader;
 import com.github.atollysis.systems.screens.GameScreen;
+import com.github.atollysis.systems.screens.ResultScreen;
+import com.github.atollysis.systems.screens.TitleScreen;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
@@ -18,18 +14,11 @@ public class Main extends Game {
      * FIELDS
      */
     private Assets assets;
-    private GameRenderer gameRenderer;
-
-    private TileMap currTileMap;
-    private Player player;
-    private PatientManager patientManager;
-
-    private float time = 0f;
-    private GameInterface interfaceRenderer;
-
-    private CollisionSystem collisionSystem;
-
-    private Inputs inputs;
+    // Music
+    private SoundSystem soundSystem;
+    // Screens
+    private GameScreen gameScreen;
+    private TitleScreen titleScreen;
 
     /*
      * METHODS
@@ -37,37 +26,39 @@ public class Main extends Game {
     @Override
     public void create() {
         assets = new Assets();
+        GameConfig.setDifficulty(GameDifficulty.AVERAGE);
 
-        Screen game = new GameScreen(assets);
-        this.setScreen(game);
+        soundSystem = new SoundSystem();
+
+        titleScreen = new TitleScreen(assets, soundSystem, this);
+        Gdx.input.setInputProcessor(titleScreen);
+        this.setScreen(titleScreen);
+        soundSystem.play(SoundSystem.Tracks.TITLE);
     }
 
-//    @Override
-//    public void render() {
-//        // BACK
-//        float delta = Gdx.graphics.getDeltaTime();
-//        time += delta;
-//        player.handleInputUpdatePos(delta, collisionSystem);
-//        patientManager.updateHoveredPatient(gameRenderer.getMouseToWorldCoords());
-//        gameRenderer.centerCamera(player);
-//
-//        // FRONT
-//        ScreenUtils.clear(0, 0, 0, 1);
-//        gameRenderer.render(player, patientManager, currTileMap, assets);
-//        interfaceRenderer.render(time, patientManager, gameRenderer);
-//    }
-//
-//    @Override
-//    public void resize(int width, int height) {
-//        gameRenderer.handleResize(width, height);
-//        interfaceRenderer.handleResize(width, height);
-//    }
-//
-//    @Override
-//    public void dispose() {
-//        interfaceRenderer.dispose();
-//        gameRenderer.dispose();
-//        assets.disposeTextures();
-//    }
+    public void endGame() {
+        GameResult results = gameScreen.getResults();
+        Screen resultScreen = new ResultScreen(assets, soundSystem, results);
+        this.setScreen(resultScreen);
+        soundSystem.play(SoundSystem.Tracks.RESULTS);
+    }
+
+    public void newGame(GameDifficulty difficulty) {
+        GameConfig.setDifficulty(difficulty);
+        gameScreen = new GameScreen(assets, soundSystem, this);
+        this.setScreen(gameScreen);
+        soundSystem.play(SoundSystem.Tracks.GAME_START);
+    }
+
+    public void toTitleScreen() {
+        Gdx.input.setInputProcessor(titleScreen);
+        this.setScreen(titleScreen);
+        soundSystem.play(SoundSystem.Tracks.TITLE);
+    }
+
+    @Override
+    public void dispose() {
+        soundSystem.dispose();
+    }
 
 }

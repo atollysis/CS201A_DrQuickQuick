@@ -1,5 +1,6 @@
 package com.github.atollysis.entities;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -26,6 +27,7 @@ public abstract class Entity {
      */
     public abstract Rectangle getBounds();
     // For rendering sprites
+    public abstract Sprite getSprite();
     public abstract float getVisualX();
     public abstract float getVisualY();
 

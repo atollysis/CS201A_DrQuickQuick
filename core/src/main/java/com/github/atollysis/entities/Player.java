@@ -2,6 +2,7 @@ package com.github.atollysis.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.github.atollysis.maps.TileMap;
@@ -81,6 +82,12 @@ public class Player extends Entity {
     @Override
     public Rectangle getBounds() {
         return BOUNDS;
+    }
+
+    // NOTE: UNUSED
+    @Override
+    public Sprite getSprite() {
+        return null;
     }
 
     @Override

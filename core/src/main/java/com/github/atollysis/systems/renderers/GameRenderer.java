@@ -1,4 +1,4 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.renderers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -6,16 +6,17 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.github.atollysis.entities.FacingDirection;
-import com.github.atollysis.entities.Patient;
-import com.github.atollysis.entities.PatientManager;
-import com.github.atollysis.entities.Player;
+import com.github.atollysis.entities.*;
 import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.maps.TileType;
+import com.github.atollysis.systems.Assets;
+import com.github.atollysis.systems.GameConfig;
+import com.github.atollysis.systems.GameSession;
 
 public class GameRenderer {
 
@@ -23,39 +24,26 @@ public class GameRenderer {
      * FIELDS
      */
     private static final float TILE_SIZE = GameConfig.getTileSize();
-    private static final float WORLD_WIDTH = GameConfig.getWorldWidth();
-    private static final float WORLD_HEIGHT = GameConfig.getWorldHeight();
+    private static float WORLD_WIDTH = GameConfig.getWorldWidth();
+    private static float WORLD_HEIGHT = GameConfig.getWorldHeight();
     // Camera
+    private static final float MIN_ZOOM = 0.1f;
+    private static final float MAX_ZOOM = 3.0f;
     private final OrthographicCamera camera = new OrthographicCamera();
     private final Viewport viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
     // Sprites
     private final SpriteBatch batch = new SpriteBatch();
     private final Sprite spritePlayer;
-//    private final Array<Sprite> spritePatients;
     // Other renderers
     private final DebugRenderer debugRenderer = new DebugRenderer();
-    private boolean isDebugRendererActive = true;
 
     /*
      * CONSTRUCTOR
      */
-    public GameRenderer(Assets assets, PatientManager patientManager) {
+    public GameRenderer(Assets assets) {
         viewport.apply();
 
         spritePlayer = new Sprite(assets.playerTexture());
-
-//        Array<Patient> patientArray = patientManager.getPatientArray();
-//        spritePatients = new Array<>(patientArray.size);
-//        Texture patientTexture = assets.patientTexture();
-
-//        for (Patient patient : patientArray) {
-//            Vector2 pos = patient.getPosition();
-//            Sprite patientSprite = new Sprite(patientTexture);
-//            patientSprite.setX(pos.x - patientTexture.getWidth() / 2f); // Middle
-//            patientSprite.setY(pos.y); // Bottom
-//            spritePatients.add(patientSprite);
-////            System.out.format("New patient added at (%.2f, %.2f)!\n", coords.x, coords.y);
-//        }
     }
 
     /*
@@ -82,25 +70,27 @@ public class GameRenderer {
     }
 
     public void render(
-                GameSession gameSession,
-                Assets assets) {
+        GameSession gameSession,
+        Assets assets
+    ) {
         Player p = gameSession.getPlayer();
-        PatientManager pMgr = gameSession.getPatientManager();
+        EntityManager pMgr = gameSession.getPatientManager();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
         drawBackground(gameSession.getTileMap(), assets);
-        drawPatients(pMgr);
+        drawEntities(pMgr);
         drawPlayer(p, assets);
 
         batch.end();
 
-        if (isDebugRendererActive)
+        if (GameConfig.isInDebugMode())
             debugRenderer.renderBounds(
                 camera,
                 p,
-                pMgr.getPatientArray());
+                pMgr.getEntityArray()
+            );
     }
 
     private Vector2 getViewableBottomLeft() {
@@ -118,6 +108,8 @@ public class GameRenderer {
     }
 
     private void drawBackground(TileMap tileMap, Assets assets) {
+        WORLD_WIDTH = camera.viewportWidth * camera.zoom;
+        WORLD_HEIGHT = camera.viewportHeight * camera.zoom;
         Vector2 viewableStart = getViewableBottomLeft();
         Vector2 viewableEnd = getViewableTopRight();
 
@@ -155,15 +147,36 @@ public class GameRenderer {
         spritePlayer.draw(batch);
     }
 
-    private void drawPatients(PatientManager patientManager) {
-        for (Patient p : patientManager.getPatientArray()) {
-            // TODO: Frustum culling
-            if (patientManager.getHoveredPatient() == p)
+    private void drawEntities(EntityManager entityManager) {
+        // TODO: Frustum culling?
+        for (Entity e : entityManager.getEntityArray()) {
+            if (entityManager.getHoveredPatient() == e
+                || entityManager.getHighlightedPatient() == e)
                 batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
-            p.getSprite().draw(batch);
+            e.getSprite().draw(batch);
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         }
+//        for (Obstacle o : entityManager.getObstacleArray()) {
+//            o.getSprite().draw(batch);
+//        }
+//        for (Patient p : entityManager.getPatientArray()) {
+//            if (entityManager.getHoveredPatient() == p)
+//                batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+//
+//            p.getSprite().draw(batch);
+//            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        }
+    }
+
+    public void debug_handleScroll(float x, float y) {
+        float zoomSpeed = 0.1f;
+        camera.zoom += y * zoomSpeed;
+        camera.zoom = MathUtils.clamp(
+            camera.zoom,
+            MIN_ZOOM,
+            MAX_ZOOM
+        );
     }
 
     /*
