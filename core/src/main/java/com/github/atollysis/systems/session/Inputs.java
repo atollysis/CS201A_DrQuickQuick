@@ -1,9 +1,11 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.session;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.github.atollysis.entities.EntityManager;
 import com.github.atollysis.runner.Main;
+import com.github.atollysis.systems.GameConfig;
+import com.github.atollysis.systems.SoundSystem;
 import com.github.atollysis.systems.screens.GameScreen;
 
 public class Inputs implements InputProcessor {
@@ -42,6 +44,10 @@ public class Inputs implements InputProcessor {
     @Override
     public boolean keyUp(int keycode) {
         switch (keycode) {
+            case Input.Keys.P:
+                if (!soundSystem.isCrossfading())
+                    screen.togglePaused();
+                return true;
             case Input.Keys.NUM_1:
                 main.newGame(GameDifficulty.EASY);
                 return true;
@@ -55,6 +61,8 @@ public class Inputs implements InputProcessor {
                 GameConfig.toggleDebugMode();
                 return true;
             case Input.Keys.BACKSPACE:
+                if (!GameConfig.isInDebugMode())
+                    return false;
                 main.toTitleScreen();
                 return true;
         }

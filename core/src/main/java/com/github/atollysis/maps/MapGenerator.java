@@ -3,7 +3,7 @@ package com.github.atollysis.maps;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
 import com.github.atollysis.systems.GameConfig;
-import com.github.atollysis.systems.GameDifficulty;
+import com.github.atollysis.systems.session.GameDifficulty;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -70,7 +70,7 @@ public class MapGenerator {
     private static TileType[][] generate(int width, int height) {
         int[][] tiles = new int[height][width];
 
-        ROOM_ORIGINS = Stream.generate(() -> MapGenerator.randomPoint(tiles))
+        ROOM_ORIGINS = Stream.generate(() -> MapGenerator.randomPoint(width, height))
             .limit(ROOM_COUNT)
             .collect(Collectors.toList());
 
@@ -94,7 +94,7 @@ public class MapGenerator {
         if (!validMap)
             return null;
 
-        addWallTiles(tiles);
+        tiles = addWallTiles(tiles);
 
         if (!allConnected(tiles))
             return null;
@@ -119,10 +119,10 @@ public class MapGenerator {
      * HELPERS
      */
 
-    private static GridPoint2 randomPoint(int[][] tiles) {
+    private static GridPoint2 randomPoint(int width, int height) {
         return new GridPoint2(
-            MathUtils.random(0, tiles[0].length - 1),
-            MathUtils.random(0, tiles.length - 1)
+            MathUtils.random(0, width - 1),
+            MathUtils.random(0, height - 1)
         );
     }
 
@@ -173,7 +173,7 @@ public class MapGenerator {
         GridPoint2 newPoint;
         // Find a non-floor point
         do {
-            newPoint = randomPoint(map);
+            newPoint = randomPoint(map[0].length, map.length);
         } while (map[newPoint.y][newPoint.x] != 0);
         // Then make it a new point
         ROOM_ORIGINS.add(newPoint);
@@ -382,7 +382,7 @@ public class MapGenerator {
 
         GridPoint2 firstCoord;
         do {
-            firstCoord = randomPoint(map);
+            firstCoord = randomPoint(width, height);
         } while (getTile(map, firstCoord) == 0);
 
         while (true) {
@@ -397,8 +397,8 @@ public class MapGenerator {
             while (!queue.isEmpty()) {
                 GridPoint2 p = queue.poll();
 
-                for (Dirs dir : Dirs.values()) {
-                    GridPoint2 neighbor = dir.getNeighbor(map, p);
+                for (Direction dir : Direction.values()) {
+                    GridPoint2 neighbor = dir.getNeighbor(p);
 
                     boolean isFloor, isVisited;
                     try {
@@ -427,9 +427,9 @@ public class MapGenerator {
                     if (map[row][col] != 0)
                         continue;
 
-                    for (Dirs dir : Dirs.values()) {
-                        GridPoint2 first = dir.getNeighbor(map, col, row);
-                        GridPoint2 second = dir.opposite().getNeighbor(map, col, row);
+                    for (Direction dir : Direction.values()) {
+                        GridPoint2 first = dir.getNeighbor(col, row);
+                        GridPoint2 second = dir.opposite().getNeighbor(col, row);
 
                         boolean bothFloors, onlyOneVisited;
                         try {
@@ -478,54 +478,20 @@ public class MapGenerator {
         }
     }
 
-    private static enum Dirs {
-        TOP, RIGHT, BOTTOM, LEFT;
-
-        public Dirs opposite() {
-            return switch (this) {
-                case TOP    -> BOTTOM;
-                case BOTTOM -> TOP;
-                case LEFT   -> RIGHT;
-                case RIGHT  -> LEFT;
-                default     -> throw new IllegalArgumentException("Undefined direction: " + this);
-            };
-        }
-
-        public GridPoint2 getNeighbor(int[][] map, int x, int y) {
-            return switch (this) {
-                case TOP    -> new GridPoint2(x, y - 1);
-                case BOTTOM -> new GridPoint2(x, y + 1);
-                case LEFT   -> new GridPoint2(x - 1, y);
-                case RIGHT  -> new GridPoint2(x + 1, y);
-                default     -> throw new IllegalArgumentException("Undefined direction: " + this);
-            };
-        }
-
-        public GridPoint2 getNeighbor(int[][] map, GridPoint2 point) {
-            return getNeighbor(map, point.x, point.y);
-        }
-
-        public int getNeighborVal(int[][] map, int x, int y) {
-            return switch (this) {
-                case TOP    -> map[y - 1][x];
-                case BOTTOM -> map[y + 1][x];
-                case LEFT   -> map[y][x - 1];
-                case RIGHT  -> map[y][x + 1];
-                default     -> 0;
-            };
-        }
-    }
-
     /*
      * ADD WALL TILES METHOD
      */
-    private static void addWallTiles(int[][] map) {
+    private static int[][] addWallTiles(int[][] map) {
         int width = map[0].length, height = map.length;
         for (int row = height - 1; row > 0 ; row--) {
             for (int col = 0; col < width; col++) {
                 boolean isDoorway;
                 try {
-                    isDoorway = map[row - 2][col] == 0;
+                    isDoorway = map[row - 2][col] == 0
+                        && (
+                            map[row - 2][col - 1] != 0
+                            || map[row - 2][col + 1] != 0
+                        );
                 } catch (IndexOutOfBoundsException e) {
                     isDoorway = false;
                 }
@@ -570,6 +536,8 @@ public class MapGenerator {
                     map[lastRow - 1][col] = DOORWAY_ID;
             }
         }
+
+        return map;
     }
 
     private static boolean matchHoriDoorPattern(int[][] map, int x, int y) {
@@ -595,15 +563,15 @@ public class MapGenerator {
         int width = map[0].length, height = map.length;
         long floorCount = Arrays.stream(map)
             .flatMapToInt(Arrays::stream)
-            .filter(tile -> tile != 0)
+            .filter(tile -> tile != 0 && tile != WALL_ID)
             .count();
 
         GridPoint2 firstCoord;
         int tile;
         do {
-            firstCoord = randomPoint(map);
+            firstCoord = randomPoint(width, height);
             tile = getTile(map, firstCoord);
-        } while (tile <= 0 || tile >= ROOM_COUNT);
+        } while (tile == 0 || tile == WALL_ID);
 
         boolean[][] visited = new boolean[height][width];
         Queue<GridPoint2> queue = new ArrayDeque<>();
@@ -616,12 +584,13 @@ public class MapGenerator {
         while (!queue.isEmpty()) {
             GridPoint2 p = queue.poll();
 
-            for (Dirs dir : Dirs.values()) {
-                GridPoint2 neighbor = dir.getNeighbor(map, p);
+            for (Direction dir : Direction.values()) {
+                GridPoint2 neighbor = dir.getNeighbor(p);
 
                 boolean isFloor, isVisited;
                 try {
-                    isFloor = getTile(map, neighbor) != 0;
+                    int tileValue = getTile(map, neighbor);
+                    isFloor = tileValue != 0 && tileValue != WALL_ID;
                     isVisited = visited[neighbor.y][neighbor.x];
                 } catch (IndexOutOfBoundsException e) {
                     continue;

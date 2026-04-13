@@ -1,4 +1,4 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.session;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
@@ -19,8 +19,8 @@ public enum GameDifficulty {
         30
     ),
     DIFFICULT(
-        5,
-        new GridPoint2(60, 30),
+        4,
+        new GridPoint2(50, 25),
         32,
         20,
         80

@@ -1,14 +1,16 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.session;
 
 import com.badlogic.gdx.utils.Array;
 import com.github.atollysis.entities.Patient;
 import com.github.atollysis.entities.EntityManager;
+import com.github.atollysis.systems.GameConfig;
 
 public class GameResult {
 
     /*
      * FIELDS
      */
+    private final GameDifficulty difficulty;
     private final int population;
     private final Array<SortRecord> patients;
     private final float time;
@@ -21,6 +23,7 @@ public class GameResult {
     public GameResult(GameSession gameSession) {
         EntityManager pMgr = gameSession.getPatientManager();
 
+        difficulty = GameConfig.getDifficulty();
         population = pMgr.getPopulation();
 
         patients = new Array<>(population);
@@ -52,6 +55,10 @@ public class GameResult {
     /*
      * GETTERS
      */
+    public GameDifficulty getDifficulty() {
+        return difficulty;
+    }
+
     public int getPopulation() {
         return population;
     }

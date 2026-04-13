@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.github.atollysis.systems.Assets;
 import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.systems.GameConfig;
-import com.github.atollysis.systems.GameDifficulty;
+import com.github.atollysis.systems.session.GameDifficulty;
 
 public class EntityManager {
 
@@ -15,7 +15,6 @@ public class EntityManager {
      * FIELDS
      */
     private static final Color CLR_SORTED = new Color(0.25f, 0.25f, 0.25f, 1f);
-    private static final Color CLR_HIGHLIGHTED = new Color(0.5f, 1f, 0.2f, 1f);
 
     private static int PATIENT_COUNT = GameConfig.getDifficulty().getPatientCount();
     private static int OBSTACLE_COUNT = GameConfig.getDifficulty().getObstacleCount();
@@ -33,7 +32,7 @@ public class EntityManager {
     /*
      * CONSTRUCTOR
      */
-    public EntityManager(GameDifficulty difficulty, TileMap tileMap, Assets assets) {
+    public EntityManager(TileMap tileMap, Assets assets) {
         int sortDisplay = 0;
 
         // Randomly generate and populate patient array

@@ -1,11 +1,14 @@
 package com.github.atollysis.systems;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.github.atollysis.systems.scores.Grade;
 
 public class Assets {
 
@@ -23,12 +26,18 @@ public class Assets {
 
     private final ObjectMap<Texture, Float> textureObstacles;
 
-    private final Texture textureFloor = new Texture("debug_floor.png");
-    private final Texture textureWall = new Texture("wall_2.png");
+    private final Texture textureFloor = new Texture("tiles/debug_floor.png");
+    private final Texture textureWall = new Texture("tiles/wall_2.png");
 
     private final Texture whitePixel;
 
-    private final Texture titleScreen = new Texture("title_screen.png");
+//    private final Texture titleScreen = new Texture("title_screen.png");
+
+    private final Texture logo = new Texture("drquickquick_logo.png");
+
+    private final Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+
+    private final ObjectMap<Grade, Texture> gradeTextureMap;
 
     /*
      * CONSTRUCTOR
@@ -52,6 +61,13 @@ public class Assets {
             24f
         );
 
+        gradeTextureMap = new ObjectMap<>();
+        for (Grade g : Grade.values()) {
+            String filepath = String.format("grades/grade_%s.png", g.toString().toLowerCase());
+            Texture t = new Texture(Gdx.files.internal(filepath));
+            gradeTextureMap.put(g, t);
+        }
+
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
@@ -72,6 +88,10 @@ public class Assets {
             t.dispose();
         for (Texture t : texturePatients)
             t.dispose();
+        for (Grade g : Grade.values())
+            gradeTextureMap.get(g).dispose();
+        logo.dispose();
+        skin.dispose();
     }
 
     /*
@@ -111,8 +131,20 @@ public class Assets {
         return whitePixel;
     }
 
-    public Texture titleScreen() {
-        return titleScreen;
+    public Texture getGradeTexture(Grade g) {
+        return gradeTextureMap.get(g);
+    }
+
+//    public Texture titleScreen() {
+//        return titleScreen;
+//    }
+
+    public Texture logo() {
+        return logo;
+    }
+
+    public Skin skin() {
+        return skin;
     }
 
 }

@@ -16,7 +16,7 @@ import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.maps.TileType;
 import com.github.atollysis.systems.Assets;
 import com.github.atollysis.systems.GameConfig;
-import com.github.atollysis.systems.GameSession;
+import com.github.atollysis.systems.session.GameSession;
 
 public class GameRenderer {
 

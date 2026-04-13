@@ -1,7 +1,7 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
   default: {
-    file: font.fnt
+    file: fonts/montserrat_64.fnt
   }
   font: {
     file: font.fnt
@@ -10,13 +10,37 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
     file: font-list.fnt
   }
   subtitle: {
-    file: font-subtitle.fnt
+    file: fonts/montserrat_32.fnt
   }
   window: {
     file: font-window.fnt
+  },
+  "title": {
+    "file": fonts/montserrat_128.fnt
   }
 }
 com.badlogic.gdx.graphics.Color: {
+  "quackblack": {
+    "hex": "011015"
+  },
+  "quackwhite": {
+    "hex": "E9FDFE"
+  },
+  "quackred": {
+    "hex": "FF6767"
+  },
+  "quackorange": {
+    "hex": "FF9208"
+  },
+  "quackyellow": {
+    "hex": "EFE363"
+  },
+  "quackgreen": {
+    "hex": "27A22B"
+  },
+  "quackgold": {
+    "hex": "FFEB08"
+  },
   black: {
     r: 0
     g: 0
@@ -53,7 +77,7 @@ com.badlogic.gdx.graphics.Color: {
     b: 1
     a: 1
   }
-}
+},
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
   split: {
     name: white
@@ -66,8 +90,36 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
   highlight: {
     name: white
     color: highlight
+  },
+  "menu-button": {
+    "name": white,
+    "color": quackblack
+  },
+  "menu-button-down": {
+    "name": white,
+    "color": quackyellow
+  },
+  "menu-button-over": {
+    "name": white,
+    "color": quackorange
+  },
+  "button-disabled": {
+    "name": white,
+    "color": disabled
+  },
+  "special-button-up": {
+    "name": white,
+    "color": quackgreen
+  },
+  "special-button-over": {
+    "name": white,
+    "color": quackyellow
+  },
+  "special-button-down": {
+    "name": white,
+    "color": quackred
   }
-}
+},
 com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable: {
   progress-bar-knob-t: {
     region: progress-bar-knob
@@ -80,8 +132,16 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
     up: button-normal
     down: button-normal-pressed
     over: button-normal-over
-    focused: button-normal-over
-  }
+    focused: button-normal-over,
+    "disabled": button-disabled
+  },
+  "special": {
+    up: special-button-up,
+    down: special-button-down,
+    over: special-button-over,
+    focused: special-button-over,
+    "disabled": button-disabled
+  },
   spinner-up: {
     up: spinner-up
     down: spinner-up-pressed
@@ -92,7 +152,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
     down: spinner-down-pressed
     over: spinner-down-over
   }
-}
+},
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
   default: {
     checkboxOn: checkbox-selected
@@ -114,7 +174,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
     up: button-normal
     down: button-normal-pressed
     over: button-normal-over
-    focused: button-normal-over
+    focused: button-normal-over,
   }
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
@@ -137,7 +197,16 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
     font: list
   }
   subtitle: {
-    font: subtitle
+    font: subtitle,
+    "fontColor": quackblack
+  },
+  menu: {
+    "font": default,
+    "fontColor": quackblack
+  },
+  "title": {
+    "font": title,
+    "fontColor": quackblack
   }
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
@@ -226,26 +295,43 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
         over: button-normal-over
         focused: button-normal-over
     }
+    menu: {
+      font: default,
+      "fontColor": quackwhite,
+      up: menu-button,
+      down: menu-button-down,
+      over: menu-button-over,
+      focused: menu-button-over
+    },
+    "special": {
+      font: default,
+      up: special-button-up,
+      down: special-button-down,
+      over: special-button-over,
+      focused: special-button-over,
+      "disabled": button-disabled,
+      "disabledFontColor": quackwhite
+    }
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
     default: {
         font: font
-        fontColor: white
+        fontColor: quackwhite
         disabledFontColor: disabled
         background: textfield
-        focusedBackground: textfield-selected
-        cursor: white
+        focusedBackground: textfield-selected,
+        cursor: white,
         selection: highlight
         messageFont: font
         messageFontColor: message
     }
     spinner: {
-        font: font
-        fontColor: white
+        font: font,
+        fontColor: quackwhite,
         disabledFontColor: disabled
         background: spinner-textfield
-        focusedBackground: spinner-textfield-selected
-        cursor: white
+        focusedBackground: spinner-textfield-selected,
+        cursor: white,
         selection: highlight
         messageFont: font
         messageFontColor: message

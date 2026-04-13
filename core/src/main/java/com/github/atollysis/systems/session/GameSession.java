@@ -1,12 +1,13 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.session;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.github.atollysis.entities.EntityManager;
 import com.github.atollysis.entities.Player;
 import com.github.atollysis.maps.MapGenerator;
 import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.runner.Main;
+import com.github.atollysis.systems.Assets;
+import com.github.atollysis.systems.SoundSystem;
 import com.github.atollysis.systems.screens.GameScreen;
 
 public class GameSession {
@@ -32,12 +33,12 @@ public class GameSession {
 //        tileMap = MapLoader.loadMap();
         tileMap = MapGenerator.generateMap();
         player = new Player(tileMap);
-        entityManager = new EntityManager(difficulty, tileMap, assets);
+        entityManager = new EntityManager(tileMap, assets);
 
         collisionSystem = new CollisionSystem(tileMap);
 
         inputs = new Inputs(screen, entityManager, soundSystem, main);
-        Gdx.input.setInputProcessor(inputs);
+//        Gdx.input.setInputProcessor(inputs);
     }
 
     /*

@@ -1,9 +1,15 @@
-package com.github.atollysis.systems;
+package com.github.atollysis.systems.session;
 
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.github.atollysis.entities.Player;
+import com.github.atollysis.maps.Direction;
 import com.github.atollysis.maps.TileMap;
 import com.github.atollysis.maps.TileType;
+import com.github.atollysis.systems.GameConfig;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class CollisionSystem {
 
@@ -92,6 +98,56 @@ public class CollisionSystem {
                 pos.x,
                 tileYEnd - player.getBounds().height);
             player.resetVelocityY();
+        }
+    }
+
+    public void checkVoid(Player player) {
+        Vector2 pos = player.getPosition();
+        int x = (int) (pos.x / TILE_SIZE);
+        int y = (int) (pos.y / TILE_SIZE);
+
+        if (isWalkable(x, y))
+            return;
+
+        GridPoint2 nearestWalkable = findNearestWalkable(x, y);
+        player.setPosition(
+            nearestWalkable.x * TILE_SIZE,
+            nearestWalkable.y * TILE_SIZE
+        );
+        player.resetVelocityX();
+        player.resetVelocityY();
+    }
+
+    private GridPoint2 findNearestWalkable(int x, int y) {
+        boolean[][] visited = new boolean[map.getHeight()][map.getWidth()];
+        Queue<GridPoint2> queue = new ArrayDeque<>();
+
+        queue.add(new GridPoint2(x, y));
+        visited[y][x] = true;
+
+        // BFS
+        while (true) {
+            GridPoint2 p = queue.poll();
+
+            if (p != null && map.getTileAt(p) == TileType.FLOOR)
+                return p;
+
+            for (Direction dir : Direction.values()) {
+                GridPoint2 neighbor = dir.getNeighbor(p);
+
+                boolean isFloor, isVisited;
+                try {
+                    isFloor = map.getTileAt(neighbor) == TileType.FLOOR;
+                    isVisited = visited[neighbor.y][neighbor.x];
+                } catch (IndexOutOfBoundsException e) {
+                    continue;
+                }
+
+                if (isFloor && !isVisited) {
+                    visited[neighbor.y][neighbor.x] = true;
+                    queue.add(neighbor);
+                }
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.github.atollysis.maps.TileMap;
-import com.github.atollysis.systems.CollisionSystem;
+import com.github.atollysis.systems.session.CollisionSystem;
 
 public class Player extends Entity {
 
@@ -70,6 +70,7 @@ public class Player extends Entity {
         collisionSystem.resolveX(this);
         this.position.set(this.position.x, newPos.y);
         collisionSystem.resolveY(this);
+        collisionSystem.checkVoid(this);
     }
 
     /*

@@ -18,11 +18,21 @@ public class SoundSystem {
     private Tracks currTrack;
     private Tracks nextTrack;
 
+    // Track fading
     private boolean fading = false;
     private boolean fadeIntoNext = false;
     private float fadeDuration;
     private float fadeTimer;
     private float fadeStartVolume;
+
+    // Crossfading (paused)
+    private boolean crossfading = false;
+    private Tracks crossFrom;
+    private Tracks crossTo;
+    private float crossTimer;
+    private float crossDuration = 0.4f;
+    private float crossFromStart = 1f;
+    private float crossToStart = 0f;
 
     // SFX
     private static final int HEAL_SOUNDS_COUNT = 10; //
@@ -83,18 +93,6 @@ public class SoundSystem {
      * MUSIC METHODS
      */
 
-    private void playTrack(Tracks track) {
-        currTrack = track;
-        currTrack.music().play();
-    }
-
-    private void stopTrack() {
-        if (currTrack != null) {
-            currTrack.music().stop();
-            currTrack.resetVolume();
-        }
-    }
-
     public void play(Tracks track) {
         if (currTrack == null) {
             playTrack(track);
@@ -106,7 +104,59 @@ public class SoundSystem {
         fadeOut(FADE_DURATION);
     }
 
+    private void playTrack(Tracks track) {
+        if (track == Tracks.GAME_LOOP) {
+            Tracks.GAME_LOOP_PAUSED.setVolume(0f);
+            Tracks.GAME_LOOP_PAUSED.music.setPosition(0f);
+            Tracks.GAME_LOOP_PAUSED.music.play();
+        } else if (track == Tracks.GAME_LOOP_PAUSED) {
+            Tracks.GAME_LOOP.setVolume(0f);
+            Tracks.GAME_LOOP.music.setPosition(0f);
+            Tracks.GAME_LOOP.music.play();
+        }
+        currTrack = track;
+        currTrack.music().play();
+    }
+
+    private void stopTrack() {
+        if (currTrack == null)
+            return;
+
+        if (currTrack == Tracks.GAME_LOOP) {
+            Tracks.GAME_LOOP_PAUSED.music().stop();
+            Tracks.GAME_LOOP_PAUSED.resetVolume();
+        } else if (currTrack == Tracks.GAME_LOOP_PAUSED) {
+            Tracks.GAME_LOOP.music().stop();
+            Tracks.GAME_LOOP.resetVolume();
+        }
+        currTrack.music().stop();
+        currTrack.resetVolume();
+    }
+
     public void update(float delta) {
+        // Pause Crossfade
+        if (crossfading) {
+            crossTimer += delta;
+
+            float t = Math.min(1f, crossTimer / crossDuration);
+
+            float fromVol = crossFromStart * (1f - t);
+            float toVol   = crossToStart + (1f - crossToStart) * t;
+
+            crossFrom.setVolume(fromVol * crossFrom.baseVolume);
+            crossTo.setVolume(toVol * crossTo.baseVolume);
+
+            if (t >= 1f) {
+                crossfading = false;
+                crossFrom.setVolume(0f);
+                crossTo.resetVolume();
+                currTrack = crossTo;
+            }
+
+            return;
+        }
+
+        // Track Fade
         if (!fading || currTrack == null)
             return;
 
@@ -136,6 +186,41 @@ public class SoundSystem {
         fadeStartVolume = currTrack.volume();
     }
 
+    public void crossfadeTo(Tracks to) {
+        if (currTrack == null
+            || currTrack == to
+            || currTrack == Tracks.GAME_START)
+            return;
+
+        crossfading = true;
+
+        crossFrom = currTrack;
+        crossTo = to;
+
+        crossTimer = 0f;
+
+        crossFromStart = currTrack.baseVolume;
+        crossToStart = to.baseVolume;
+
+        if (!crossTo.music.isPlaying()) {
+            crossTo.setVolume(0f);
+            crossTo.music.play();
+        }
+    }
+
+    public void setStartLoopListener(boolean paused) {
+        Tracks.GAME_START.music.setOnCompletionListener(m -> {
+            playTrack(paused ?
+                Tracks.GAME_LOOP_PAUSED :
+                Tracks.GAME_LOOP
+            );
+        });
+    }
+
+    public boolean isCrossfading() {
+        return crossfading;
+    }
+
     public void dispose() {
         Tracks.disposeAll();
         patientHighlight.dispose();
@@ -156,6 +241,11 @@ public class SoundSystem {
         ),
         GAME_LOOP(
             "audio/music/quickquick_game-loop.ogg",
+            0.2f,
+            true
+        ),
+        GAME_LOOP_PAUSED(
+            "audio/music/quickquick_game-loop-paused.ogg",
             0.2f,
             true
         ),
